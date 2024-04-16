@@ -885,10 +885,11 @@ module fuse_fiss_utils
    !> \details The user is welcome to set up a benchmark, but should be 
    !> aware that no miracles will happen here. If there are more very distinct
    !> cohorts than maxcohort, then the user will need to live with that and
-   !> accept life is not always fair with those with limited computational resources.           
+   !> accept life is not always fair with those with limited computational resources.   
+   !> LEM: add flag to ensure cohorts of sufficiently different heights do not fuse, to
+   !> make sure damaged cohorts do not shrink DBH.
    !---------------------------------------------------------------------------------------!
    subroutine new_fuse_cohorts(csite,ipa, lsl, fuse_initial)
-
       use ed_state_vars       , only : sitetype            & ! Structure
                                      , patchtype           ! ! Structure
       use pft_coms            , only : dbh_crit            & ! intent(in)
@@ -1101,8 +1102,10 @@ module fuse_fiss_utils
                !---------------------------------------------------------------------------!
                diff_dbh    = abs ( cpatch%dbh (donc) - cpatch%dbh (recc) )
                diff_hgt    = abs ( cpatch%hite(donc) - cpatch%hite(recc) )
+               !dr_may_fuse = ( diff_dbh < (dbh_crit(dpft)  * coh_size_tol) ) .and.         &
+               !              ( diff_hgt < (hgt_max (dpft)  * coh_size_tol) )
                dr_may_fuse = ( diff_dbh < (dbh_crit(dpft)  * coh_size_tol) ) .and.         &
-                             ( diff_hgt < (hgt_max (dpft)  * coh_size_tol) )
+                             ( diff_hgt < (hgt_max (dpft)  * coh_size_tol_min) ) !LEM
                !---------------------------------------------------------------------------!
 
 
