@@ -980,8 +980,13 @@ subroutine init_hurricane_params
    hurr_a2 = 3.7107217
    hurr_b  = 0.2238506
    hurr_c  = -1.941200
-   hurr_g  = 1.438688
-   hurr_h  = 0.005136475
+   
+   !----- Old original values -------------------------------------------------------------!
+   !hurr_g  = 1.438688
+   !hurr_h  = 0.005136475
+   hurr_g = 1.3848123
+   hurr_h = 0.0003034405
+   
    med_dmg_min = 0.2
    med_dmg_max = 0.5
    max_dmg_min = 0.5
@@ -1004,13 +1009,13 @@ subroutine init_hurricane_params
    hurr_c(3)  = -3.0648894
    hurr_c(18) = -0.83756
 
-   hurr_g(2)  = 0.596089
-   hurr_g(3)  = 1.985226
-   hurr_g(18) = -2.156441
+   hurr_g(2)  = -0.1410095
+   hurr_g(3)  = 1.0842595
+   hurr_g(18) = -2.4996207
 
-   hurr_h(2)  = -0.06984992
-   hurr_h(3)  = -0.05683523
-   hurr_h(18) = -0.005643411
+   hurr_h(2)  = -0.0160774193
+   hurr_h(3)  = -0.0078781324
+   hurr_h(18) = -0.0158366417
 
    !----- Palms don't really get damaged --------------------------------------------------!
    med_dmg_min(18) = 0
