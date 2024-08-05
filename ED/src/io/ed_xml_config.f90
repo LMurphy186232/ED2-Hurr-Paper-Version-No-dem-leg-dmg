@@ -2233,7 +2233,7 @@ subroutine write_ed_xml_config
         call putConfigREAL("hurr_a2", hurr_a2(i))
         call putConfigREAL("hurr_b" , hurr_b (i))
         call putConfigREAL("hurr_c" , hurr_c (i))
-        call putConfigREAL("hurr_g" , hurr_b (i))
+        call putConfigREAL("hurr_g" , hurr_g (i))
         call putConfigREAL("hurr_h" , hurr_h (i))
         call putConfigREAL("med_dmg_min" , med_dmg_min(i))
         call putConfigREAL("med_dmg_max" , med_dmg_max(i))
