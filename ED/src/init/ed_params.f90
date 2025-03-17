@@ -3437,7 +3437,7 @@ subroutine init_pft_alloc_params()
    agf_bs(:) = 0.7
    
    !----- LEM hardcoding for palms --------------------------------------------------------!
-   agf_bs(18) = 0.8
+   agf_bs(18) = 0.75
    !---------------------------------------------------------------------------------------!
 
 
@@ -5357,6 +5357,9 @@ subroutine init_pft_resp_params()
    !---------------------------------------------------------------------------------------!
    growth_resp_factor(:) = merge(0.4503    ,merge(onethird,0.0,is_grass(:)),is_conifer (:))
    growth_resp_factor(:) = merge(growthresp,          growth_resp_factor(:),is_tropical(:))
+   
+   ! LEM hardcoding for palms
+   growth_resp_factor(18) = 0.666
    !---------------------------------------------------------------------------------------!
 
 
@@ -5819,7 +5822,7 @@ subroutine init_pft_mort_params()
    mort3(2) = 0.025
    mort3(3) = 0.01
    mort3(4) = 0.005
-   mort3(18) = 0
+   mort3(18) = 0.005
    
 
 
