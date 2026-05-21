@@ -152,7 +152,6 @@ module structural_growth
       real                          :: old_wood_water
       real                          :: old_leaf_water_im2
       real                          :: old_wood_water_im2
-      logical                       :: print_detailed
       logical          , parameter  :: printout  = .false.
       character(len=17), parameter  :: fracfile  = 'struct_growth.txt'
       !----- Locally saved variables. -----------------------------------------------------!
@@ -181,7 +180,6 @@ module structural_growth
       end if
       !------------------------------------------------------------------------------------!
 
-      coh_off_allom = 0
 
       !----- Previous month (for crop yield update and carbon balance mortality). ---------!
       prev_month = 1 + modulo(current_time%month-2,12)
@@ -889,19 +887,6 @@ module structural_growth
          !---------------------------------------------------------------------------------!
       end do polyloop
       !------------------------------------------------------------------------------------!
-
-      !------------------------------------------------------------------------------------!
-      ! Print info about number of off-allometry cohorts                                   !
-      !------------------------------------------------------------------------------------!
-      print_detailed = btest(idetailed,6)
-      if (print_detailed .and. include_hurricanes .eq. 1) then
-         open (unit=79,file=trim(hurricane_report),form='formatted',access='append'         &
-              ,status='old')
-
-         write (unit=79,fmt='(i4,a,i4,a,i7,a)')  current_time%month, '/'                 &
-               ,current_time%year, ': ', coh_off_allom, ' cohorts off allometry'
-         close(unit=79,status='keep')
-      end if
       return
    end subroutine dbstruct_dt
    !=======================================================================================!
@@ -914,13 +899,8 @@ module structural_growth
 
    !=======================================================================================!
    !=======================================================================================!
-   !>\brief This subroutine will decide the partition of storage biomass into seeds and dead
-   !> (structural) biomass.
-   !> \details Modified by Lora Murphy to take into account the possibility that a cohort
-   !> will be off allometry (height is less than expected for DBH). If this is the case,
-   !> all storage carbon will go to restoring height first, before other structural growth
-   !> or reproduction. The tolerance for allometry mismatch is settable by the user but
-   !> defaults to 0-ish.
+   !     This subroutine will decide the partition of storage biomass into seeds and dead  !
+   ! (structural) biomass.                                                                 !
    !---------------------------------------------------------------------------------------!
    subroutine plant_structural_allocation(ipft,hite,dbh,lat,phen_status,elongf,bdeada      &
                                          ,bdeadb,bstorage,bstorage_reserve,maxh            &
@@ -936,8 +916,7 @@ module structural_growth
                                , st_fract       & ! intent(in)
                                , dbh_crit       & ! intent(in)
                                , is_grass       & ! intent(in)
-                               , is_liana       & ! intent(in)
-                               , off_allom_tol
+                               , is_liana       ! ! intent(in)
       use ed_misc_coms  , only : current_time   & ! intent(in)
                                , igrass         & ! intent(in)
                                , ibigleaf       ! ! intent(in)
@@ -968,12 +947,10 @@ module structural_growth
       real                         :: dnorm         !> Normalised DBH
       real                         :: r_fract_act   !> Hgt-dependent reproduction allocation
       real                         :: f_bgi         !> inverse of fraction for growth and reproduction
-      real                         :: height_target !> Expected height for a DBH
       logical                      :: late_spring
       logical                      :: use_storage
       logical                      :: zero_growth
       logical                      :: zero_repro
-      logical                      :: off_allometry
       logical          , parameter :: printout  = .false.
       character(len=13), parameter :: fracfile  = 'storalloc.txt'
       !----- Locally saved variables. -----------------------------------------------------!
@@ -1002,8 +979,6 @@ module structural_growth
 
       !------------------------------------------------------------------------------------!
       ! Check whether plants want to reserve bstorage for reflushing leaves and roots      !
-      ! LEM: Assuming leaves are even more important than branches, leaving this as the    !
-      ! first step before allometry check                                                  !
       !------------------------------------------------------------------------------------!
       if (bstorage <= bstorage_reserve) then
           ! plants want to save bstorage for potential future needs
@@ -1015,17 +990,6 @@ module structural_growth
       !------------------------------------------------------------------------------------!
 
 
-      !------------------------------------------------------------------------------------!
-      ! LEM: Check whether this cohort is on allometry. The only situation being checked   !
-      ! is height being less than expected for DBH. Any other allometry mismatch is        !
-      ! ignored. This is only supported for trees.                                         !
-      !------------------------------------------------------------------------------------!
-      height_target = dbh2h(ipft, dbh)
-      off_allometry = (.not. is_liana(ipft)) .and. &
-                      (.not. is_grass(ipft)) .and. &
-                      ((height_target - hite) > off_allom_tol(ipft))
-      !------------------------------------------------------------------------------------!
-
 
       !----- Check whether this is late spring... -----------------------------------------!
       late_spring = (lat >= 0.0 .and. current_time%month ==  6) .or.                       &
@@ -1033,9 +997,8 @@ module structural_growth
       !------------------------------------------------------------------------------------!
 
       !----- Use storage. -----------------------------------------------------------------!
-      use_storage = off_allometry .or.                                  &
-                    ((phenology(ipft) /= 2   .or.  late_spring) .and.   &
-                    phen_status == 0  .and. bstorage > 0.0)
+      use_storage = (phenology(ipft) /= 2   .or.  late_spring) .and.                       &
+                    phen_status == 0  .and. bstorage > 0.0
       !------------------------------------------------------------------------------------!
 
 
@@ -1156,19 +1119,6 @@ module structural_growth
 
 
                !----- Decide allocation based on size. ------------------------------------!
-               if (off_allometry) then
-                 !------------------------------------------------------------------------!
-                 !    Cohort is off allometry. There is missing AGB and height is too     !
-                 ! small for the DBH. Use the liana playbook: invest what is needed (or   !
-                 ! everything in case it's not enough) to reach bd_target.                !
-                 !------------------------------------------------------------------------!
-                 bd_target = size2bd(dbh, dbh2h(ipft, dbh),ipft)
-                 delta_bd  = bd_target - bdeada - bdeadb
-                 f_growth  = merge(0.0                                                    &
-                                  ,min(delta_bd / bstorage, 1.0)                          &
-                                  ,bstorage * delta_bd <= 0.0)
-                 f_bseeds  = merge( 0.0, min(r_fract_act,1.0-f_growth),zero_repro)
-               else
                  if (zero_growth) then
                    f_bseeds = 1.0 - st_fract(ipft)
                    f_growth = 0.0
@@ -1176,7 +1126,6 @@ module structural_growth
                    f_bseeds = r_fract_act
                    f_growth = max(0.0,1.0 - st_fract(ipft) - r_fract_act)
                  end if
-               end if
                !---------------------------------------------------------------------------!
             end if
             !------------------------------------------------------------------------------!
