@@ -1,6 +1,8 @@
 
 <!-- NOTE: This page uses a combination of HTML and markdown to display properly in both GitHub and Doxygen. -->
 
+This version of the ED2 with hurricanes code allows damage but does not change future carbon allocation strategies as a result. This is for exploration of effects.
+
 ## Table of Contents
 1. <a href="#overview"> Model Overview </a>
 2. <a href="#stable">Current version and stable release versions</a>
