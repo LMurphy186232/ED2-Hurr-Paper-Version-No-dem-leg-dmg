@@ -94,8 +94,6 @@ subroutine ed_model()
    use vegetation_dynamics , only : veg_dynamics_driver         ! ! sub-routine
    use ed_type_init        , only : ed_init_viable              ! ! sub-routine
    use soil_respiration    , only : zero_litter_inputs          ! ! sub-routine
-   implicit none
-   !----- Common blocks. ------------------------------------------------------------------!
 #if defined(RAMS_MPI)
    use mpi
 #endif
