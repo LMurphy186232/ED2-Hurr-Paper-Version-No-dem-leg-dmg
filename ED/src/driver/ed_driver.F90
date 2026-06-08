@@ -28,6 +28,7 @@ subroutine ed_driver()
                                    , nnodetot                      & ! intent(in)
                                    , sendnum                       ! ! intent(in)
 #if defined(RAMS_MPI)
+   use mpi
    use ed_node_coms         , only : recvnum                       ! ! intent(in)
 #endif
    use detailed_coms        , only : idetailed                     & ! intent(in)
@@ -39,10 +40,6 @@ subroutine ed_driver()
    use hurricane            , only : read_hurricane_db             ! ! subroutine
    use hurricane_coms       , only : include_hurricanes
    implicit none
-   !----- Included variables. -------------------------------------------------------------!
-#if defined(RAMS_MPI)
-   include 'mpif.h' ! MPI commons
-#endif
    !----- Local variables. ----------------------------------------------------------------!
    character(len=12)           :: c0
    character(len=12)           :: c1
