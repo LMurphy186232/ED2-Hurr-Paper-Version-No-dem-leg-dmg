@@ -20,7 +20,9 @@ subroutine fatal_error(reason,subr,file)
    logical                      :: parallel
    logical                      :: slavenode
    !---------------------------------------------------------------------------------------!
-
+#if defined(RAMS_MPI)
+   integer                      :: ierr
+#endif
 
    !---------------------------------------------------------------------------------------!
    !       Check which type of end we should use.  For the main program, this should never !
@@ -58,7 +60,7 @@ subroutine fatal_error(reason,subr,file)
    !     Remind the user of deprecated ED2IN choices...                                    !
    !---------------------------------------------------------------------------------------!
 #if defined(RAMS_MPI)
-   if (parallel) call MPI_Abort(MPI_COMM_WORLD, 1)
+   if (parallel) call MPI_Abort(MPI_COMM_WORLD, 1, ierr)
 #endif
    stop 'fatal_error'
 end subroutine fatal_error
