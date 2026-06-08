@@ -97,8 +97,9 @@ subroutine ed_model()
    implicit none
    !----- Common blocks. ------------------------------------------------------------------!
 #if defined(RAMS_MPI)
-   include 'mpif.h'
+   use mpi
 #endif
+   implicit none
    !----- Local variables. ----------------------------------------------------------------!
    type(simtime)      :: daybefore
    character(len=28)  :: fmthead
