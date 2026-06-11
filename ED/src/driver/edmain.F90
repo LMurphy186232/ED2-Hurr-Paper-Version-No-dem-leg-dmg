@@ -187,19 +187,19 @@ program main
    num_procs     = 1
    thread        = 1
    cpu           = 1
-  ! thread_use(:) = 0
-  ! cpu_use(:)    = 0
-  ! !$ max_threads = omp_get_max_threads()
-  ! !$ num_procs   = omp_get_num_procs()
+   thread_use(:) = 0
+   cpu_use(:)    = 0
+   !$ max_threads = omp_get_max_threads()
+   !$ num_procs   = omp_get_num_procs()
 
-  ! !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(thread,cpu)
-  ! do n = 1,max_threads
-  !   !$ thread = omp_get_thread_num() + 1
-  !   !$ cpu    = findmycpu() + 1
+   !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(thread,cpu)
+   do n = 1,max_threads
+     !$ thread = omp_get_thread_num() + 1
+     !$ cpu    = findmycpu() + 1
   !   thread_use(thread) = 1
   !   cpu_use(cpu)       = 1
-  ! end do
-  ! !$OMP END PARALLEL DO
+   end do
+   !$OMP END PARALLEL DO
    !---------------------------------------------------------------------------------------!
 
 
