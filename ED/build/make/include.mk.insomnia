@@ -10,8 +10,8 @@ BASE=$(ED_ROOT)/build/
 # Activate appropriate parts below, comment out others.
 
 # HDF 5  Libraries
-HDF5_INCS= -I/insomnia001/shared/apps/hdf5p-intel/1.14.3/include -I/usr/lib64/openmpi/lib -I/usr/include/openmpi-x86_64
-HDF5_LIBS= -L/insomnia001/shared/apps/hdf5p-intel/1.14.3/lib -lhdf5 -lm -lhdf5_fortran -lhdf5 \
+HDF5_INCS= -I/insomnia001/shared/apps/hdf5p/1.14.3/include -I/usr/lib64/openmpi/lib -I/usr/include/openmpi-x86_64
+HDF5_LIBS= -L/insomnia001/shared/apps/hdf5p/1.14.3/lib -lhdf5 -lm -lhdf5_fortran -lhdf5 \
 	 -lhdf5_hl -L/usr/lib64 -lz -L/usr/lib64/openmpi/lib
 #---------------------------------------------------------------
 # If you have a version of hdf5 compiled in parallel, then you
@@ -69,7 +69,7 @@ ifeq ($(KIND_COMP),)
 endif
 
 ifeq ($(KIND_COMP),$(filter $(KIND_COMP), A B C D))
-   F_OPTS= -g -fopenmp -O0 -ffree-line-length-none -Wall -W -ffpe-trap=invalid,zero,overflow -Wconversion -fbounds-check -fbacktrace -fdump-core -fallow-argument-mismatch -fallow-invalid-boz
+   F_OPTS= -g -fopenmp -O0 -ffree-line-length-none -Wall -W -ffpe-trap=zero,overflow -Wconversion -fbounds-check -fbacktrace -fdump-core -fallow-argument-mismatch -fallow-invalid-boz
    C_OPTS = -g -fopenmp -O0 -ffpe-trap=invalid,zero,overflow -fbounds-check
    LOADER_OPTS=${F_OPTS}
 endif
